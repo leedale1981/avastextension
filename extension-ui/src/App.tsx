@@ -17,8 +17,8 @@ function App(props: any) {
       <div className="App">
         <div id='main-text'>
           {
-            (props.isWhitelisted) &&
-              <Typography variant='h6' color="primary">{`${props.currentUrl} has tracked you ${props.timesSeen} times`}</Typography>
+            (props.isWhitelisted && props.timesSeen <= 3) &&
+              <Typography variant='h6' color="primary">{`${props.currentUrl} has tracked you ${props.timesSeen} times!`}</Typography>
           }
           <Typography variant='h4' color="primary">Stop being tracked by online advertisers</Typography>
         </div>

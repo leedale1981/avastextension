@@ -13,6 +13,12 @@ chrome.webNavigation.onCompleted.addListener(() => {
                     let item: any = {}
                     item[url] = timesSeen;
                     chrome.storage.sync.set(item, () => {});
+
+                    let tabId = (tab.id) ? tab.id : 0;
+
+                    if (timesSeen <= 3) {
+                        chrome.tabs.sendMessage(tabId, {"message": "whitelist-url-seen", timesSeen});
+                    }
                 }
             });
         }

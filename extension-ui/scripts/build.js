@@ -20,7 +20,8 @@ const chalk = require('react-dev-utils/chalk');
 const fs = require('fs-extra');
 const webpack = require('webpack');
 const configFactoryUi = require('../config/webpack.config.ui');
-const configFactoryChrome = require('../config/webpack.config.chrome');
+const configFactoryChromeBg = require('../config/webpack.config.chrome.background');
+const configFactoryChromeContent = require('../config/webpack.config.chrome.content');
 const paths = require('../config/paths');
 const checkRequiredFiles = require('react-dev-utils/checkRequiredFiles');
 const formatWebpackMessages = require('react-dev-utils/formatWebpackMessages');
@@ -46,7 +47,8 @@ if (!checkRequiredFiles([paths.appHtml, paths.appIndexJs])) {
 
 // Generate configuration
 const configUi = configFactoryUi('production');
-const configChrome = configFactoryChrome('production');
+const configChromeBg = configFactoryChromeBg('production');
+const configChromeContent = configFactoryChromeContent('production');
 
 // We require that you explicitly set browsers and do not fall back to
 // browserslist defaults.
@@ -147,10 +149,11 @@ function build(previousFileSizes) {
   console.log('Creating an optimized production build...');
 
   const compilerUi = webpack(configUi);
-  const compilerChrome = webpack(configChrome);
+  const compilerChromeBg = webpack(configChromeBg);
+  const compilerChromeContent = webpack(configChromeContent);
 
   let uiRun = new Promise((resolve, reject) => {
-    compilerChrome.run((err, stats) => {
+    compilerUi.run((err, stats) => {
       let messages;
       if (err) {
         if (!err.message) {
@@ -206,8 +209,65 @@ function build(previousFileSizes) {
     });
   });
 
-  let chromeRun =  new Promise((resolve, reject) => {
-    compilerUi.run((err, stats) => {
+  let chromeBgRun =  new Promise((resolve, reject) => {
+    compilerChromeBg.run((err, stats) => {
+    let messages;
+    if (err) {
+      if (!err.message) {
+        return reject(err);
+      }
+
+      let errMessage = err.message;
+
+      // Add additional information for postcss errors
+      if (Object.prototype.hasOwnProperty.call(err, 'postcssNode')) {
+        errMessage +=
+          '\nCompileError: Begins at CSS selector ' +
+          err['postcssNode'].selector;
+      }
+
+      messages = formatWebpackMessages({
+        errors: [errMessage],
+        warnings: [],
+      });
+    } else {
+      messages = formatWebpackMessages(
+        stats.toJson({ all: false, warnings: true, errors: true })
+      );
+    }
+    if (messages.errors.length) {
+      // Only keep the first error. Others are often indicative
+      // of the same problem, but confuse the reader with noise.
+      if (messages.errors.length > 1) {
+        messages.errors.length = 1;
+      }
+      return reject(new Error(messages.errors.join('\n\n')));
+    }
+    if (
+      process.env.CI &&
+      (typeof process.env.CI !== 'string' ||
+        process.env.CI.toLowerCase() !== 'false') &&
+      messages.warnings.length
+    ) {
+      console.log(
+        chalk.yellow(
+          '\nTreating warnings as errors because process.env.CI = true.\n' +
+            'Most CI servers set it automatically.\n'
+        )
+      );
+      return reject(new Error(messages.warnings.join('\n\n')));
+    }
+
+    return resolve({
+      stats,
+      previousFileSizes,
+      warnings: messages.warnings,
+    });
+    });
+  });
+
+  let chromeContentRun =  new Promise((resolve, reject) => {
+    compilerChromeContent.run((err, stats) => {
     let messages;
     if (err) {
       if (!err.message) {
@@ -264,7 +324,7 @@ function build(previousFileSizes) {
   });
 
   return new Promise((resolve, reject) => {
-      Promise.all([chromeRun, uiRun])
+      Promise.all([chromeBgRun, chromeContentRun, uiRun])
       .then((values) => {
         return resolve({
           stats: values[0].stats,

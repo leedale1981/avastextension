@@ -12,5 +12,13 @@
   "background": {
     "scripts": ["background.js"]
   },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": ["content.js"]
+    }
+  ],
   "content_security_policy": "script-src 'self' 'unsafe-eval' 'sha256-3lPt5hyLk7GlMrRViXNzeSjHK0UoLwk8+PEi5IRqw4c='; object-src 'self'"
 }
