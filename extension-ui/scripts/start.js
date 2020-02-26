@@ -29,8 +29,7 @@ const {
 } = require('react-dev-utils/WebpackDevServerUtils');
 const openBrowser = require('react-dev-utils/openBrowser');
 const paths = require('../config/paths');
-const configFactoryUi = require('../config/webpack.config.ui');
-const configFactoryChrome = require('../config/webpack.config.chrome');
+const configFactory = require('../config/webpack.config.ui');
 const createDevServerConfig = require('../config/webpackDevServer.config');
 
 const useYarn = fs.existsSync(paths.yarnLockFile);
@@ -77,8 +76,7 @@ checkBrowsers(paths.appPath, isInteractive)
       return;
     }
 
-    const configUi = configFactoryUi('development');
-    const configChrome = configFactoryChrome('development');
+    const config = configFactory('development');
     const protocol = process.env.HTTPS === 'true' ? 'https' : 'http';
     const appName = require(paths.appPackageJson).name;
     const useTypeScript = fs.existsSync(paths.appTsConfig);
@@ -96,9 +94,9 @@ checkBrowsers(paths.appPath, isInteractive)
         devServer.sockWrite(devServer.sockets, 'errors', errors),
     };
     // Create a webpack compiler that is configured with custom messages.
-    const compiler = createCompiler({
+    const compilerUi = createCompiler({
       appName,
-      configUi,
+      config,
       devSocket,
       urls,
       useYarn,
@@ -118,7 +116,7 @@ checkBrowsers(paths.appPath, isInteractive)
       proxyConfig,
       urls.lanUrlForConfig
     );
-    const devServer = new WebpackDevServer(compiler, serverConfig);
+    const devServer = new WebpackDevServer(compilerUi, serverConfig);
     // Launch WebpackDevServer.
     devServer.listen(port, HOST, err => {
       if (err) {
