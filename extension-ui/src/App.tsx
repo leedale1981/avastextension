@@ -1,25 +1,33 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Typography, Button, MuiThemeProvider } from '@material-ui/core';
+import { createMuiTheme } from '@material-ui/core';
+import './styles/App.css';
+import './styles/Popup.css';
 
-function App() {
+const colorTheme = createMuiTheme({
+  palette: {
+    primary: { main: '#fff' },
+    secondary: { main: '#fff' }
+  }
+});
+
+function App(props: any) {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <MuiThemeProvider theme={colorTheme}>
+      <div className="App">
+        <div id='main-text'>
+          {
+            (props.isWhitelisted) &&
+              <Typography variant='h6' color="primary">{`${props.currentUrl} has tracked you ${props.timesSeen} times`}</Typography>
+          }
+          <Typography variant='h4' color="primary">Stop being tracked by online advertisers</Typography>
+        </div>
+        <div id='buttons'>
+          <Button id="learn-more-button" variant="outlined" color="secondary">Learn more</Button>
+          <Button id="browse-url-button" color="primary">{`Browse "${props.siteTitle.substring(0, 10)}" without being tracked`}</Button>
+        </div>
+      </div>
+    </MuiThemeProvider>
   );
 }
 

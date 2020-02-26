@@ -1,7 +1,6 @@
 {
     "git.ignoreLimitWarning": true,
     "files.exclude": {
-        "**/*.js": true,
         "**/*.js.map": true
     }
 }

@@ -1,12 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
+import './styles/index.css';
 import App from './App';
-import * as serviceWorker from './serviceWorker';
+import WhiteListService, { SiteData } from './services/whitelist-service';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+let whitelistService: WhiteListService = new WhiteListService();
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+whitelistService.getCurrentSite()
+.then((currentSite: SiteData) => {
+   ReactDOM.render(
+        <App    currentUrl={currentSite.url} 
+                isWhitelisted={currentSite.isWhitelisted} 
+                timesSeen={currentSite.timesSeen} 
+                siteTitle={currentSite.title}
+        />, document.getElementById('root'));
+});
+
+

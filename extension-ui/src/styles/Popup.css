@@ -1,0 +1,23 @@
+#main-text {
+    font-weight: bold;
+}
+
+#main-text, h6, h4 {
+    color: #ffffff;
+}
+
+#buttons {
+    margin-top: 2rem;
+}
+
+#buttons button {
+    margin-right: 1rem;
+}
+
+#learn-more-button {
+
+}
+
+#browse-url-button {
+    background-color: #19ae4d;
+}
