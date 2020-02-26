@@ -1,0 +1,17 @@
+{
+  "manifest_version": 2,
+  "name": "Avast whitelist URLs extension",
+  "short_name": "Avast whitelist URLs extension",
+  "version": "1.0.0",
+  "description": "Avast whitelist URLs extension",
+  "permissions": ["tabs", "activeTab", "storage"],
+  "browser_action": {
+    "default_popup": "ui/index.html",
+    "default_title": "Avast whitelist URLs extension"
+  },
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "content_security_policy": "script-src 'self' 'unsafe-eval' 'sha256-3lPt5hyLk7GlMrRViXNzeSjHK0UoLwk8+PEi5IRqw4c='; object-src 'self'"
+}
